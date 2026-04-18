@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>読解練習2</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', 'Yu Gothic', sans-serif;
+      background-color: #f0f4f8;
+      min-height: 100vh;
+    }
+    button, input { font-family: inherit; }
+    .blank {
+      display: inline-block;
+      border-bottom: 2.5px solid #4a6fe3;
+      min-width: 120px;
+      height: 20px;
+      vertical-align: bottom;
+      margin: 0 4px;
+    }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+// ===== GAS 設定 =====
+// Google Apps Script をデプロイした後、下の URL を貼り付けてください
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxc1qntNTN1hEn6pqYhUDxr3gF0xo4bz-OtCJ8hHdMBDfKwGRDhxdWC0W03KNDTWF7r/exec';
+
+// ===== QUESTION DATA =====
+// type: 'text' = show question as formatted text
+//       'image' = show question as image file
+// For 'text': lines = array of strings (each displayed on its own line)
+// For 'image': image = path to image file
+
+const sections = [
+  {
+    name: 'セクション1',
+    description: '語彙・文法問題',
+    questions: [
+      // Q1 (21番)
+      { type: 'text',
+        lines: ['発想は良いから、実行可能な形に＿＿＿＿＿＿込んでください。'],
+        correct: 4, choices: ['絞り', '決め', '照らし', '落とし'] },
+      // Q2 (22番)
+      { type: 'text',
+        lines: ['Y社が起こした問題は見過ごせるものではないが、今後の付き合いを考えて、今回は＿＿＿＿＿＿責任を追及しないという結論に至った。'],
+        correct: 2, choices: ['わざと', 'あえて', '決して', 'よほど'] },
+      // Q3 (23番)
+      { type: 'text',
+        lines: ['私どもといたしましては、「朝型のビジネスマン」に＿＿＿＿＿＿商品展開を考えております。'],
+        correct: 4, choices: ['得意な', '特別な', '変化した', '特化した'] },
+      // Q4 (24番)
+      { type: 'text',
+        lines: ['優れた営業マンは、常に顧客一人一人に目を＿＿＿＿＿＿いる。'],
+        correct: 3, choices: ['付けて', '進めて', '配って', '通して'] },
+      // Q5 (25番)
+      { type: 'text',
+        lines: ['今度の支店長には、ぜひ現場の声を＿＿＿＿＿＿もらいたいですね。'],
+        correct: 3, choices: ['引き上げて', '吸い取って', 'くみ上げて', 'まとめ取って'] },
+      // Q6 (26番)
+      { type: 'text',
+        lines: ['基本合意には至ったが、詳細については、話を＿＿＿＿＿＿なければならない。'],
+        correct: 3, choices: ['つけ', '通さ', 'つめ', '出さ'] },
+      // Q7 (27番)
+      { type: 'text',
+        lines: ['取引先に＿＿＿＿＿＿、結局、譲歩してしまった。'],
+        correct: 1, choices: ['ごねられて', 'よろこばれて', 'さわいで', 'あばれて'] },
+      // Q8 (28番)
+      { type: 'text',
+        lines: ['A：申し訳ございません。私どもの＿＿＿＿＿＿で、発注ミスがございまして……。',
+                'B：困りますねぇ。'],
+        correct: 1, choices: ['不手際', '不祥事', '非常識', '無遠慮'] },
+      // Q9 (29番)
+      { type: 'text',
+        lines: ['A：大事な会議の前で部長は＿＿＿＿＿＿しているから、今は話しかけないほうがいいですよ。',
+                'B：そうですか。わかりました。'],
+        correct: 2, choices: ['どきどき', 'ぴりぴり', 'わくわく', 'きんきん'] },
+      // Q10 (30番)
+      { type: 'text',
+        lines: ['A：前回、無理を聞いてもらいましたから、今回はちょっと色を＿＿＿＿＿＿おきました。',
+                'B：ありがとうございます。'],
+        correct: 2, choices: ['変えて', 'つけて', 'とって', '盛って'] },
+    ]
+  },
+  {
+    name: 'セクション2',
+    description: '表現読解問題',
+    questions: [
+      // Q1 (21番)
+      { type: 'text',
+        lines: ['A：もう一度ご検討願えませんか。',
+                'B：これ以上はちょっと……＿＿＿＿＿＿。'],
+        correct: 3, choices: ['ご勘弁してください', '出来かねません', 'ご容赦ください', '観念してください'] },
+      // Q2 (22番)
+      { type: 'text',
+        lines: ['A：課長、先ほどアサヒ商事の佐藤様からお電話がありまして、折り返しお電話をいただきたい＿＿＿＿＿＿。',
+                'B：ああ、そう。ありがとう。'],
+        correct: 3, choices: ['とおっしゃいました', 'ようでした', 'とのことでした', 'そうでした'] },
+      // Q3 (23番)
+      { type: 'text',
+        lines: ['A：こちらは、女性向けに開発したスイーツです。どうぞ召し上がってみてください。',
+                'B：この味は……女性向けというより、＿＿＿＿＿＿子ども向けなんじゃないかな。'],
+        correct: 2, choices: ['もっとも', 'むしろ', '相対的', '比較的'] },
+      // Q4 (24番)
+      { type: 'text',
+        lines: ['ただいまご紹介に＿＿＿＿＿＿エムエム物産の田中でございます。'],
+        correct: 1, choices: ['あずかりました', 'あずけました', 'あずかっていただきました', 'あずけていただきました'] },
+      // Q5 (25番)
+      { type: 'text',
+        lines: ['A：今月の売り上げ、よかったんですって。',
+                'B：うん、まあ、＿＿＿＿＿＿ってところかな。'],
+        correct: 3, choices: ['だいたい', 'ほどほど', 'まずまず', 'まだまだ'] },
+      // Q6 (26番)
+      { type: 'text',
+        lines: ['A：あんな大手とよく契約ができましたね。',
+                'B：ええ、金子産業の社長が＿＿＿＿＿＿くれまして。'],
+        correct: 3, choices: ['口を挟んで', '手を借りて', '口を利いて', '手を結んで'] },
+      // Q7 (27番)
+      { type: 'text',
+        lines: ['いただいたお電話で＿＿＿＿＿＿、例のプロジェクトの件でひとつご相談したいことがございまして……。'],
+        correct: 1, choices: ['恐縮ですが', 'お手数ですが', 'お願いですが', '勝手ですが'] },
+      // Q8 (28番)
+      { type: 'text',
+        lines: ['A：キャンペーン初日で大変だろうから、営業から応援に行かせるよ。',
+                'B：ありがとうございます。そうしていただけると＿＿＿＿＿＿。'],
+        correct: 2, choices: ['喜ばれます', '助かります', '幸甚です', '幸せです'] },
+      // Q9 (29番)
+      { type: 'text',
+        lines: ['A：お客さんから「値段をもっと下げてくれ」って言われちゃったよ。',
+                'B：またですか。まったくあのお客さんには、いつも＿＿＿＿＿＿ますよね。'],
+        correct: 4, choices: ['泣いてくれ', '泣いてもらい', '泣かれてしまい', '泣かされ'] },
+      // Q10 (30番)
+      { type: 'text',
+        lines: ['A：無理は＿＿＿＿＿＿でのお願いなんですが……。',
+                'B：いやあ、いくらなんでもそれは……。'],
+        correct: 2, choices: ['ご存知の上', '承知の上', 'ご承知の上', '承諾の上'] },
+    ]
+  },
+  {
+    name: 'セクション3',
+    description: '総合読解問題',
+    questions: [
+      // Q1 — 3-1.png: 第十九回定時株主総会ご案内（縦書き）
+      { type: 'image', image: 'section3/3-1.png',
+        correct: 2,
+        choices: [
+          '委任状を持参し、万障繰り合わせて臨席してほしい',
+          '委任状に賛否を示し、名前を書いて印鑑を押し、返送してほしい',
+          '参考資料と委任状を速達で送ってほしい',
+          '参考資料に賛否を示し、記名と捺印をした委任状を返送してほしい'
+        ] },
+
+      // Q2 — 3-2.png: 就任挨拶状（縦書き）
+      { type: 'image', image: 'section3/3-2.png',
+        correct: 1,
+        choices: [
+          '社長の喜寿のお祝い',
+          '社長の喜寿のお知らせ',
+          '社長退任のお知らせ',
+          '会社の喜寿のお祝い'
+        ] },
+
+      // Q3 — 3-3.png: ダイエットAA追加注文メール
+      { type: 'image', image: 'section3/3-3.png',
+        correct: 4,
+        choices: [
+          '600ケースを出来次第、一括納入する。',
+          '納期に500ケースを納入して、100ケースをキャンセルする',
+          '納期に550ケースを納入して、50ケースは出来次第納入する',
+          '納期に550ケースを納入して、50ケースをキャンセルする'
+        ] },
+
+      // Q4 — 3-4.png: HP休止のお知らせメール
+      { type: 'image', image: 'section3/3-4.png',
+        correct: 3,
+        choices: [
+          '法人営業第一部にファックスする。',
+          '法人営業第一部に電話する。',
+          '法人営業第二部に電話する。',
+          '総務部に電話する。'
+        ] },
+
+      // Q5 — 3-5.png: ご紹介いただきありがとうございましたメール
+      { type: 'image', image: 'section3/3-5.png',
+        correct: 3,
+        choices: [
+          '自分たちの会社を信用してほしい。',
+          '田村商事に値引きの依頼をしてほしい。',
+          '田村商事に自分たちの意欲を伝えてほしい。',
+          '田村商事を紹介してほしい。'
+        ] },
+
+      // Q6 — 3-6.png: パソコンソフトセールのご案内メール
+      { type: 'image', image: 'section3/3-6.png',
+        correct: 2,
+        choices: [
+          'ノートパソコンのセールで商品を買ってもらうこと。',
+          'パソコンソフトのセールで商品を買ってもらうこと。',
+          'セール会場でお客様に粗品を渡して食事をすること。',
+          'セール会場の受付でお客様のパソコンの様子を見ること。'
+        ] },
+
+      // Q7 — 3-7.png: 稟議書（事務所改装）
+      { type: 'image', image: 'section3/3-7.png',
+        correct: 4,
+        choices: [
+          '人員の増加と空調設備の老朽化',
+          '人員の増加による業務非効率',
+          '人員の増加に伴うレイアウトの老朽化',
+          '人員の増加による業務非効率と事務所の老朽化'
+        ] },
+
+      // Q8 — 3-8.png: 定例会議議事録
+      { type: 'image', image: 'section3/3-8.png',
+        correct: 1,
+        choices: [
+          '紙資源節約の具体的なやり方を全社員に知らせる。',
+          '顧客に出す案内状やお知らせをペーパレス化する。',
+          '9月12日からの社内通達をeメール添付で送る。',
+          '紙資源節約によるコスト削減シミュレーションを作成する。'
+        ] },
+
+      // Q9 — 3-9.png: 調査報告書
+      { type: 'image', image: 'section3/3-9.png',
+        correct: 1,
+        choices: [
+          'サイズと設置のしやすさ',
+          '価格と機能性',
+          'サイズと耐久性',
+          'インパクトのあるデザイン'
+        ] },
+
+      // Q10 — 3-10.png: 社員懇親旅行のお知らせ
+      { type: 'image', image: 'section3/3-10.png',
+        correct: 1,
+        choices: [
+          '帰りの交通費と参加費¥18,000',
+          '参加費¥18,000',
+          '帰りの交通費と参加費¥9,000',
+          '参加費¥9,000'
+        ] },
+    ]
+  }
+];
+
+// ===== STATE =====
+let state = {
+  screen: 'login',
+  studentId: '',
+  name: '',
+  currentSection: 0,
+  currentQuestion: 0,
+  selectedAnswer: null,
+  answers: [[], [], []],
+  scores: [0, 0, 0],
+};
+
+const COLORS = ['#4a6fe3', '#2eaab8', '#e3714a'];
+const BG_COLORS = ['#eef2ff', '#eafbfd', '#fff4f0'];
+
+// ===== RENDER =====
+function render() {
+  const app = document.getElementById('app');
+  if (state.screen === 'login')          app.innerHTML = renderLogin();
+  else if (state.screen === 'section-intro') app.innerHTML = renderSectionIntro();
+  else if (state.screen === 'question')  app.innerHTML = renderQuestion();
+  else if (state.screen === 'results')   app.innerHTML = renderResults();
+  attachEvents();
+}
+
+// ---------- LOGIN ----------
+function renderLogin() {
+  return `
+  <div style="min-height:100vh;background:#f0f4f8;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:white;border-radius:20px;padding:44px 40px;width:100%;max-width:460px;box-shadow:0 4px 28px rgba(74,111,227,0.13);">
+      <h1 style="text-align:center;font-size:30px;font-weight:700;margin-bottom:40px;color:#222;letter-spacing:2px;">読解練習2</h1>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:14px;font-weight:600;margin-bottom:7px;color:#444;">學號 <span style="color:#e05555;">*</span></div>
+        <input type="text" id="studentId" placeholder="請輸入您的學號"
+          style="width:100%;padding:13px 16px;border:1.5px solid #dde3f0;border-radius:10px;font-size:15px;color:#333;outline:none;"
+          onfocus="this.style.borderColor='#4a6fe3'" onblur="this.style.borderColor='#dde3f0'">
+      </div>
+      <div style="margin-bottom:32px;">
+        <div style="font-size:14px;font-weight:600;margin-bottom:7px;color:#444;">姓名 <span style="color:#e05555;">*</span></div>
+        <input type="text" id="studentName" placeholder="請輸入您的姓名"
+          style="width:100%;padding:13px 16px;border:1.5px solid #dde3f0;border-radius:10px;font-size:15px;color:#333;outline:none;"
+          onfocus="this.style.borderColor='#4a6fe3'" onblur="this.style.borderColor='#dde3f0'">
+      </div>
+      <button id="startBtn"
+        style="width:100%;padding:16px;background:#4a6fe3;color:white;border:none;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:1px;">
+        開始測驗
+      </button>
+    </div>
+  </div>`;
+}
+
+// ---------- SECTION INTRO ----------
+function renderSectionIntro() {
+  const s = sections[state.currentSection];
+  const c = COLORS[state.currentSection];
+  const icons = ['📝', '💬', '📄'];
+  return `
+  <div style="min-height:100vh;background:#f0f4f8;display:flex;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:white;border-radius:20px;padding:52px 40px;width:100%;max-width:460px;box-shadow:0 4px 28px rgba(74,111,227,0.13);text-align:center;">
+      <div style="font-size:52px;margin-bottom:16px;">${icons[state.currentSection]}</div>
+      <div style="font-size:13px;color:#aaa;margin-bottom:8px;letter-spacing:2px;text-transform:uppercase;">Next Section</div>
+      <h2 style="font-size:44px;font-weight:800;color:${c};margin-bottom:8px;letter-spacing:2px;">${s.name}</h2>
+      <div style="font-size:15px;color:#777;margin-bottom:10px;">${s.description}</div>
+      <div style="display:inline-block;background:${BG_COLORS[state.currentSection]};color:${c};font-size:14px;font-weight:600;padding:6px 20px;border-radius:20px;margin-bottom:44px;">全 10 問</div>
+      <button id="startSectionBtn"
+        style="width:100%;padding:16px;background:${c};color:white;border:none;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:1px;">
+        スタート →
+      </button>
+    </div>
+  </div>`;
+}
+
+// ---------- QUESTION ----------
+function renderQuestion() {
+  const s = sections[state.currentSection];
+  const q = s.questions[state.currentQuestion];
+  const qNum = state.currentQuestion + 1;
+  const total = s.questions.length;
+  const c = COLORS[state.currentSection];
+  const bg = BG_COLORS[state.currentSection];
+  const progress = ((qNum - 1) / total) * 100;
+
+  // Question body
+  let questionBody = '';
+  if (q.type === 'text') {
+    // Format text question (handle A/B dialogue)
+    const linesHtml = q.lines.map(line => {
+      // Replace ＿+ with styled blank
+      const formatted = line.replace(/＿+/g, `<span style="display:inline-block;border-bottom:2.5px solid ${c};min-width:100px;height:1.2em;vertical-align:bottom;margin:0 3px;"></span>`);
+      // Style A: / B: lines
+      if (line.startsWith('A：') || line.startsWith('A:')) {
+        return `<div style="margin-bottom:10px;"><span style="display:inline-block;background:${c};color:white;font-weight:700;font-size:12px;padding:2px 8px;border-radius:4px;margin-right:8px;">A</span><span style="color:#333;font-size:16px;">${formatted.replace(/^A[：:]\s*/, '')}</span></div>`;
+      } else if (line.startsWith('B：') || line.startsWith('B:')) {
+        return `<div style="margin-bottom:4px;"><span style="display:inline-block;background:#888;color:white;font-weight:700;font-size:12px;padding:2px 8px;border-radius:4px;margin-right:8px;">B</span><span style="color:#333;font-size:16px;">${formatted.replace(/^B[：:]\s*/, '')}</span></div>`;
+      } else {
+        return `<div style="color:#222;font-size:17px;line-height:1.8;">${formatted}</div>`;
+      }
+    }).join('');
+
+    questionBody = `
+      <div style="background:#f9fafb;border:1.5px solid #edf0f5;border-radius:12px;padding:22px 20px;margin-bottom:22px;">
+        ${linesHtml}
+      </div>`;
+  } else if (q.type === 'document') {
+    questionBody = `
+      <div style="border:1.5px solid #dde3f0;border-radius:10px;overflow:hidden;margin-bottom:12px;background:white;max-height:300px;overflow-y:auto;padding:16px 18px;">
+        ${q.documentHtml}
+      </div>
+      <div style="background:#f9fafb;border:1.5px solid #edf0f5;border-radius:10px;padding:13px 16px;margin-bottom:16px;">
+        <span style="color:#222;font-size:15px;line-height:1.7;">${q.questionText}</span>
+      </div>`;
+  } else {
+    // Image question
+    questionBody = `
+      <div style="border:1.5px solid #edf0f5;border-radius:10px;overflow:hidden;margin-bottom:20px;background:#fafafa;">
+        <img src="${q.image}" alt="問題" style="width:100%;height:auto;display:block;">
+      </div>`;
+  }
+
+  // Choice buttons
+  const choicesHtml = q.choices.map((ch, i) => {
+    const num = i + 1;
+    const sel = state.selectedAnswer === num;
+    return `
+      <button class="choice-btn" data-choice="${num}"
+        style="display:flex;align-items:flex-start;width:100%;padding:13px 16px;border:2px solid ${sel ? c : '#e4e9f0'};border-radius:11px;background:${sel ? bg : 'white'};font-size:15px;cursor:pointer;margin-bottom:10px;text-align:left;">
+        <span style="display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;border-radius:50%;background:${sel ? c : '#e8ecf2'};color:${sel ? 'white' : '#666'};font-weight:700;margin-right:12px;font-size:14px;flex-shrink:0;">${num}</span>
+        <span style="line-height:1.6;color:#333;padding-top:3px;">${ch}</span>
+      </button>`;
+  }).join('');
+
+  const canNext = state.selectedAnswer !== null;
+  const isLastQ = state.currentQuestion === total - 1;
+  const isLastSec = state.currentSection === 2;
+  const nextLabel = isLastQ && isLastSec ? '結果を見る ✓' : isLastQ ? '次のセクションへ →' : '次へ →';
+
+  return `
+  <div style="min-height:100vh;background:#f0f4f8;padding:20px 0 48px;">
+    <div style="background:white;border-radius:20px;padding:24px 24px 28px;width:92%;max-width:700px;margin:0 auto;box-shadow:0 4px 24px rgba(74,111,227,0.10);">
+
+      <!-- Top bar -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-size:13px;font-weight:700;color:${c};background:${bg};padding:5px 14px;border-radius:20px;">${s.name}</span>
+        <span style="font-size:14px;font-weight:600;color:#aaa;">第 <strong style="color:#555;">${qNum}</strong> 問 / ${total}</span>
+      </div>
+
+      <!-- Progress -->
+      <div style="height:5px;background:#eee;border-radius:3px;margin-bottom:22px;overflow:hidden;">
+        <div style="height:100%;width:${progress}%;background:${c};border-radius:3px;transition:width 0.3s;"></div>
+      </div>
+
+      ${questionBody}
+
+      <!-- Choices -->
+      <div style="margin-bottom:20px;">${choicesHtml}</div>
+
+      <!-- Next -->
+      <button id="nextBtn" ${canNext ? '' : 'disabled'}
+        style="width:100%;padding:15px;background:${canNext ? c : '#c8d0e0'};color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:${canNext ? 'pointer' : 'not-allowed'};letter-spacing:0.5px;transition:background 0.2s;">
+        ${nextLabel}
+      </button>
+    </div>
+  </div>`;
+}
+
+// ---------- RESULTS ----------
+function renderResults() {
+  const total = state.scores.reduce((a, b) => a + b, 0);
+  const pct = Math.round(total / 30 * 100);
+
+  let grade, gradeColor;
+  if (pct >= 90)      { grade = '優秀 🏆'; gradeColor = '#f5a623'; }
+  else if (pct >= 70) { grade = '良好 👍'; gradeColor = '#4a6fe3'; }
+  else if (pct >= 50) { grade = '合格 ✅'; gradeColor = '#2eaab8'; }
+  else                { grade = 'もう一度頑張ろう 💪'; gradeColor = '#e3714a'; }
+
+  const sectionRows = sections.map((s, i) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f0f3f8;">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#444;">${s.name}</div>
+        <div style="font-size:12px;color:#bbb;">${s.description}</div>
+      </div>
+      <div>
+        <span style="font-size:24px;font-weight:800;color:${COLORS[i]};">${state.scores[i]}</span>
+        <span style="font-size:14px;color:#bbb;"> / 10</span>
+      </div>
+    </div>`).join('');
+
+  // Detail: show all 30 answers
+  let detailHtml = '';
+  sections.forEach((s, si) => {
+    const c = COLORS[si];
+    detailHtml += `
+      <div style="margin-top:20px;">
+        <div style="font-size:13px;font-weight:700;color:${c};padding:6px 0;border-bottom:2px solid ${BG_COLORS[si]};margin-bottom:8px;">${s.name}</div>`;
+    s.questions.forEach((q, qi) => {
+      const userAns = state.answers[si][qi];
+      const ok = userAns === q.correct;
+      // Get choice text
+      const userText = q.choices[userAns - 1] || '—';
+      const correctText = q.choices[q.correct - 1];
+      detailHtml += `
+        <div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f5f7fb;align-items:flex-start;">
+          <span style="font-size:12px;color:#bbb;min-width:28px;flex-shrink:0;padding-top:2px;">Q${qi+1}</span>
+          <span style="font-size:16px;flex-shrink:0;padding-top:1px;">${ok ? '✅' : '❌'}</span>
+          <div style="flex:1;font-size:13px;">
+            <span style="color:${ok ? '#2eaab8' : '#e3714a'};font-weight:600;">${userAns}. ${userText}</span>
+            ${!ok ? `<span style="color:#bbb;"> → 正答: <strong style="color:#2eaab8;">${q.correct}. ${correctText}</strong></span>` : ''}
+          </div>
+        </div>`;
+    });
+    detailHtml += `</div>`;
+  });
+
+  return `
+  <div style="min-height:100vh;background:#f0f4f8;padding:24px 0 56px;">
+    <div style="background:white;border-radius:20px;padding:32px 28px;width:92%;max-width:560px;margin:0 auto;box-shadow:0 4px 24px rgba(74,111,227,0.10);">
+
+      <h2 style="text-align:center;font-size:22px;font-weight:800;color:#222;margin-bottom:4px;">テスト結果</h2>
+      <div style="text-align:center;font-size:14px;color:#bbb;margin-bottom:28px;">${state.name}（學號：${state.studentId}）</div>
+
+      <div style="background:#f5f7ff;border-radius:16px;padding:26px;text-align:center;margin-bottom:24px;">
+        <div style="font-size:64px;font-weight:900;color:#4a6fe3;line-height:1;">${total}</div>
+        <div style="font-size:15px;color:#aaa;margin-top:6px;">/ 30 点（正答率 ${pct}%）</div>
+        <div style="font-size:18px;font-weight:700;color:${gradeColor};margin-top:14px;">${grade}</div>
+      </div>
+
+      <div style="margin-bottom:28px;">${sectionRows}</div>
+
+      <button id="toggleDetail"
+        style="width:100%;padding:12px;background:white;color:#4a6fe3;border:2px solid #4a6fe3;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px;">
+        解答詳細を見る ▼
+      </button>
+
+      <div id="detailPanel" style="display:none;margin-bottom:24px;">${detailHtml}</div>
+
+      ${GAS_URL ? `<div id="gasStatus" style="text-align:center;font-size:13px;color:#aaa;margin-bottom:14px;">📤 成績を送信中...</div>` : ''}
+
+      <button id="restartBtn"
+        style="width:100%;padding:15px;background:#4a6fe3;color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">
+        もう一度挑戦する 🔄
+      </button>
+    </div>
+  </div>`;
+}
+
+// ===== EVENTS =====
+function attachEvents() {
+  if (state.screen === 'login') {
+    document.getElementById('startBtn').addEventListener('click', startQuiz);
+    ['studentId','studentName'].forEach(id =>
+      document.getElementById(id).addEventListener('keydown', e => { if (e.key==='Enter') startQuiz(); })
+    );
+  }
+  if (state.screen === 'section-intro') {
+    document.getElementById('startSectionBtn').addEventListener('click', () => {
+      state.currentQuestion = 0;
+      state.selectedAnswer = null;
+      state.screen = 'question';
+      render();
+    });
+  }
+  if (state.screen === 'question') {
+    document.querySelectorAll('.choice-btn').forEach(btn =>
+      btn.addEventListener('click', () => {
+        state.selectedAnswer = parseInt(btn.dataset.choice);
+        render();
+      })
+    );
+    const nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) nb.addEventListener('click', advanceQuestion);
+  }
+  if (state.screen === 'results') {
+    document.getElementById('toggleDetail').addEventListener('click', () => {
+      const p = document.getElementById('detailPanel');
+      const b = document.getElementById('toggleDetail');
+      const open = p.style.display === 'none';
+      p.style.display = open ? 'block' : 'none';
+      b.textContent = open ? '解答詳細を閉じる ▲' : '解答詳細を見る ▼';
+    });
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      state.screen = 'login';
+      state.answers = [[],[],[]];
+      state.scores = [0,0,0];
+      render();
+    });
+  }
+}
+
+function startQuiz() {
+  const id = document.getElementById('studentId').value.trim();
+  const nm = document.getElementById('studentName').value.trim();
+  if (!id || !nm) { alert('學號と姓名を両方入力してください。'); return; }
+  state.studentId = id;
+  state.name = nm;
+  state.currentSection = 0;
+  state.currentQuestion = 0;
+  state.selectedAnswer = null;
+  state.answers = [[],[],[]];
+  state.scores = [0,0,0];
+  state.screen = 'section-intro';
+  render();
+}
+
+// ===== GAS 送信 =====
+function submitToGAS() {
+  if (!GAS_URL) return; // URL 未設定なら何もしない
+
+  // 各問の「解答番号」と「正誤（true/false）」をまとめる
+  const detail = sections.map((sec, si) =>
+    sec.questions.map((q, qi) => ({
+      ans     : state.answers[si][qi] || 0,          // 選んだ番号（未選択=0）
+      correct : state.answers[si][qi] === q.correct, // 正誤
+      right   : q.correct,                           // 正答番号
+    }))
+  );
+
+  const payload = {
+    studentId : state.studentId,
+    name      : state.name,
+    scores    : state.scores,
+    answers   : state.answers,
+    detail    : detail,   // ← 追加：問ごとの詳細
+    timestamp : new Date().toISOString(),
+  };
+  // GAS は CORS を返さないため no-cors で送信
+  fetch(GAS_URL, {
+    method  : 'POST',
+    headers : { 'Content-Type': 'application/json' },
+    body    : JSON.stringify(payload),
+    mode    : 'no-cors',
+  })
+  .then(() => {
+    const el = document.getElementById('gasStatus');
+    if (el) { el.textContent = '✅ 成績を送信しました'; el.style.color = '#2eaab8'; }
+  })
+  .catch(() => {
+    const el = document.getElementById('gasStatus');
+    if (el) { el.textContent = '⚠️ 送信に失敗しました（ネットワークを確認してください）'; el.style.color = '#e3714a'; }
+  });
+}
+
+function advanceQuestion() {
+  const q = sections[state.currentSection].questions[state.currentQuestion];
+  state.answers[state.currentSection][state.currentQuestion] = state.selectedAnswer;
+  if (state.selectedAnswer === q.correct) state.scores[state.currentSection]++;
+
+  const isLastQ  = state.currentQuestion === sections[state.currentSection].questions.length - 1;
+  const isLastSec = state.currentSection === 2;
+
+  if (isLastQ) {
+    state.screen = isLastSec ? 'results' : 'section-intro';
+    if (!isLastSec) state.currentSection++;
+  } else {
+    state.currentQuestion++;
+  }
+  state.selectedAnswer = null;
+  render();
+  window.scrollTo(0, 0);
+  // 全問終了時に GAS へ送信
+  if (isLastQ && isLastSec) submitToGAS();
+}
+
+render();
+</script>
+</body>
+</html>
